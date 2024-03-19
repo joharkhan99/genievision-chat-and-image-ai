@@ -1,11 +1,6 @@
-import 'dart:io';
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:genievision/screens/chat_screen.dart';
 import 'package:genievision/screens/image_screen.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:image_picker/image_picker.dart';
 
 void main() async {
   runApp(MyApp());
@@ -19,33 +14,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  Future<void> test(BuildContext context) async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 0);
-    if (pickedFile != null) {
-      const String apiKey = 'AIzaSyBqbJzQPpcZTkJJARtW02EiSWW8GFJpDe0';
-
-      final File imageFile = File(pickedFile.path);
-      final imageBytes = await imageFile.readAsBytes();
-
-      if (imageBytes.length > 4 * 1024 * 1024) {
-        throw Exception('Image size exceeds the maximum allowed size.');
-      }
-
-      final prompt = TextPart("Please explain the contents of this image.");
-      final imagePart = DataPart('image/jpeg', imageBytes);
-
-      final model = GenerativeModel(model: 'gemini-pro-vision', apiKey: apiKey);
-      final response = await model.generateContent([
-        Content.multi([prompt, imagePart])
-      ]);
-      print(response.text);
-    } else {
-      // User canceled image selection
-      print('No image selected.');
-    }
-  }
-
   final _pages = [
     const ImageScreen(),
     const ChatScreen(),
@@ -62,14 +30,25 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      routes: {
+        '/image-screen': (context) => const ImageScreen(),
+        '/chat-screen': (context) => const ChatScreen(),
+      },
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        primaryColor: const Color.fromARGB(255, 49, 156, 90),
         primarySwatch: Colors.green,
         appBarTheme: const AppBarTheme(
           backgroundColor: Color.fromARGB(255, 17, 20, 27),
           titleTextStyle: TextStyle(
             color: Colors.white,
             fontSize: 20,
+          ),
+          actionsIconTheme: IconThemeData(
+            color: Colors.white,
+          ),
+          iconTheme: IconThemeData(
+            color: Colors.white,
           ),
         ),
         scaffoldBackgroundColor: const Color.fromARGB(66, 39, 44, 61),
