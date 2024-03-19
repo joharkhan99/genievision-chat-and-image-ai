@@ -2,21 +2,28 @@ import 'dart:io';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:genievision/screens/chat_screen.dart';
+import 'package:genievision/screens/image_screen.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:image_picker/image_picker.dart';
 
 void main() async {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   Future<void> test(BuildContext context) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 0);
     if (pickedFile != null) {
-      final String apiKey = 'AIzaSyBqbJzQPpcZTkJJARtW02EiSWW8GFJpDe0';
+      const String apiKey = 'AIzaSyBqbJzQPpcZTkJJARtW02EiSWW8GFJpDe0';
 
       final File imageFile = File(pickedFile.path);
       final imageBytes = await imageFile.readAsBytes();
@@ -39,40 +46,60 @@ class MyApp extends StatelessWidget {
     }
   }
 
-  // Future<List<int>> compressImage(File imageFile) async {
-  //   final int maxSize = 4 * 1024 * 1024; // 4MB (maximum allowed size by API)
-  //   final int quality = 85; // Image quality (0 - 100)
-  //   final compressedImage = await FlutterImageCompress.compressWithFile(
-  //     imageFile.path,
-  //     quality: quality,
-  //   );
+  final _pages = [
+    const ChatScreen(),
+    const ImageScreen(),
+  ];
 
-  //   print(compressedImage);
+  int _selectedIndex = 0;
 
-  //   // Ensure that the compressed image size is within the maximum allowed size
-  //   if (compressedImage!.length > maxSize) {
-  //     throw Exception('Compressed image size exceeds the maximum allowed size.');
-  //   }
-
-  //   return compressedImage;
-  // }
+  void onTap(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color.fromARGB(255, 17, 20, 27),
+          titleTextStyle: TextStyle(
+            color: Color.fromARGB(255, 97, 97, 97),
+            fontSize: 20,
+          ),
+        ),
+        scaffoldBackgroundColor: const Color.fromARGB(66, 39, 44, 61),
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: Color.fromARGB(255, 17, 20, 27),
+          selectedItemColor: Color.fromARGB(255, 49, 156, 90),
+          unselectedItemColor: Color.fromARGB(255, 97, 97, 97),
+        ),
+      ),
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Generative AI'),
+          title: const Text('GenieVision'),
         ),
-        body: Center(
-          child: Column(
-            children: [
-              ElevatedButton(
-                onPressed: () => test(context),
-                child: const Text('Test'),
-              ),
-            ],
-          ),
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          onTap: onTap,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat_outlined),
+              activeIcon: Icon(Icons.chat_rounded),
+              label: 'Chat',
+              tooltip: 'AI Chatbot',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.image_outlined),
+              activeIcon: Icon(Icons.image_rounded),
+              label: 'Image',
+              tooltip: 'Image Explanation',
+            ),
+          ],
         ),
       ),
     );
