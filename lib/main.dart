@@ -47,8 +47,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   final _pages = [
-    const ChatScreen(),
     const ImageScreen(),
+    const ChatScreen(),
   ];
 
   int _selectedIndex = 0;
@@ -68,7 +68,7 @@ class _MyAppState extends State<MyApp> {
         appBarTheme: const AppBarTheme(
           backgroundColor: Color.fromARGB(255, 17, 20, 27),
           titleTextStyle: TextStyle(
-            color: Color.fromARGB(255, 97, 97, 97),
+            color: Colors.white,
             fontSize: 20,
           ),
         ),
@@ -76,7 +76,9 @@ class _MyAppState extends State<MyApp> {
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: Color.fromARGB(255, 17, 20, 27),
           selectedItemColor: Color.fromARGB(255, 49, 156, 90),
-          unselectedItemColor: Color.fromARGB(255, 97, 97, 97),
+          unselectedItemColor: Colors.grey,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
         ),
       ),
       home: Scaffold(
@@ -88,19 +90,20 @@ class _MyAppState extends State<MyApp> {
           onTap: onTap,
           items: const [
             BottomNavigationBarItem(
-              icon: Icon(Icons.chat_outlined),
-              activeIcon: Icon(Icons.chat_rounded),
-              label: 'Chat',
-              tooltip: 'AI Chatbot',
-            ),
-            BottomNavigationBarItem(
               icon: Icon(Icons.image_outlined),
               activeIcon: Icon(Icons.image_rounded),
               label: 'Image',
               tooltip: 'Image Explanation',
             ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat_outlined),
+              activeIcon: Icon(Icons.chat_rounded),
+              label: 'Chat',
+              tooltip: 'AI Chatbot',
+            ),
           ],
         ),
+        body: _pages[_selectedIndex],
       ),
     );
   }
