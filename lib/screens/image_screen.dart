@@ -15,8 +15,17 @@ class ImageScreen extends StatefulWidget {
 
 class _ImageScreenState extends State<ImageScreen> {
   final _nameController = TextEditingController();
-  late DataPart _image;
+  late DataPart _imagePart;
+  late File _imageFile;
   late String _fileName = "";
+  bool _isLoading = false;
+
+  @override
+  @override
+  void initState() {
+    super.initState();
+    _imageFile = File("");
+  }
 
   Future<void> uploadImage(BuildContext context) async {
     final picker = ImagePicker();
@@ -25,6 +34,7 @@ class _ImageScreenState extends State<ImageScreen> {
       final File imageFile = File(pickedFile.path);
       final imageBytes = await imageFile.readAsBytes();
       setState(() {
+        _imageFile = imageFile;
         _fileName = pickedFile.path;
       });
 
@@ -38,7 +48,7 @@ class _ImageScreenState extends State<ImageScreen> {
       }
       final imagePart = DataPart("image/jpeg", imageBytes);
       // return imagePart;
-      _image = imagePart;
+      _imagePart = imagePart;
     } else {
       const snackBar = SnackBar(
         content: Text("No image selected. Please try again."),
@@ -49,7 +59,19 @@ class _ImageScreenState extends State<ImageScreen> {
   }
 
   Future<void> generateText(BuildContext context) async {
-    final imagePart = _image;
+    final imagePart = _imagePart;
+    if (_imageFile.path == "") {
+      const snackBar = SnackBar(
+        content: Text("Please upload an image."),
+        duration: Duration(seconds: 2),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
 
     TextPart prompt = TextPart("");
     if (_nameController.text.isNotEmpty && _nameController.text.trim().isNotEmpty) {
@@ -89,6 +111,10 @@ class _ImageScreenState extends State<ImageScreen> {
         ],
       );
     }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -101,13 +127,15 @@ class _ImageScreenState extends State<ImageScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                _fileName,
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.center,
-              ),
+              _imageFile.path != ""
+                  ? Image.file(
+                      _imageFile,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    )
+                  : Container(),
+              const SizedBox(height: 20),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 17, 20, 27),
@@ -132,7 +160,7 @@ class _ImageScreenState extends State<ImageScreen> {
                       children: [
                         Icon(
                           Icons.cloud_upload_outlined,
-                          size: 100,
+                          size: 50,
                           color: Colors.grey,
                         ),
                         SizedBox(height: 10),
@@ -212,6 +240,7 @@ class _ImageScreenState extends State<ImageScreen> {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.9,
                 child: ElevatedButton(
+                  // disable button if no image is uploaded
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).primaryColor,
                     padding: const EdgeInsets.all(15.0),
@@ -223,15 +252,24 @@ class _ImageScreenState extends State<ImageScreen> {
                     ),
                   ),
                   // redirect to another screen
-                  onPressed: () => generateText(context),
-                  child: const Text(
-                    'Submit',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  onPressed: () => _isLoading ? null : generateText(context),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Text(
+                          'Submit',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                 ),
               ),
             ],

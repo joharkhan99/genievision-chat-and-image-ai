@@ -17,7 +17,6 @@ class ImageOutputScreen extends StatelessWidget {
   }
 
   void goBack(BuildContext context) {
-    // Navigator.pop(context);
     Navigator.of(context).pop();
   }
 
