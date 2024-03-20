@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:genievision/screens/chat_screen.dart';
 import 'package:genievision/screens/image_screen.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
-  runApp(MyApp());
+  await Hive.initFlutter();
+  await Hive.openBox('chatMessages');
+
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
