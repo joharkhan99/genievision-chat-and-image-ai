@@ -14,3 +14,29 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+## deployment
+
+### app key
+
+```bash
+keytool -genkeypair -v -keystore app_key.keystore -keyalg RSA -keysize 2048 -validity 10000 -alias app_key
+```
+
+### android/build.gradle
+
+```bash
+buildTypes {
+    release {
+        signingConfig signingConfigs.release
+    }
+}
+signingConfigs {
+  release {
+      storeFile file("../../app_key.keystore")
+      storePassword "xxxxx"
+      keyAlias "app_key"
+      keyPassword "xxxxx"
+  }
+}
+```
