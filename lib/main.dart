@@ -36,6 +36,11 @@ class _MyAppState extends State<MyApp> {
       },
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        textSelectionTheme: const TextSelectionThemeData(
+          cursorColor: Color.fromARGB(255, 49, 156, 90),
+          selectionColor: Color.fromARGB(66, 186, 248, 210),
+          selectionHandleColor: Color.fromARGB(255, 49, 156, 90),
+        ),
         primaryColor: const Color.fromARGB(255, 49, 156, 90),
         primarySwatch: Colors.green,
         appBarTheme: const AppBarTheme(

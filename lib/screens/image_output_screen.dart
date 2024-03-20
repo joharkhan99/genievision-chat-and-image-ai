@@ -26,7 +26,7 @@ class ImageOutputScreen extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text(
-          'Result from AI Model',
+          'Result from Genie',
           style: TextStyle(
             color: Colors.white,
           ),
@@ -43,10 +43,12 @@ class ImageOutputScreen extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Center(
-                  child: Text(
-                    outputText,
-                    style: const TextStyle(
-                      color: Colors.white,
+                  child: SelectionArea(
+                    child: Text(
+                      outputText,
+                      style: const TextStyle(
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
