@@ -17,6 +17,7 @@ class _ChatScreenState extends State<ChatScreen> {
   List<Message> chatMessages = [];
   String apiKey = "AIzaSyBqbJzQPpcZTkJJARtW02EiSWW8GFJpDe0";
   late GenerativeModel model;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -26,13 +27,18 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   String getDate(DateTime dateTime) {
-    return "${dateTime.month} ${dateTime.day}, ${dateTime.year} ${dateTime.hour}:${dateTime.minute} ${dateTime.hour > 12 ? "PM" : "AM"}";
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return "${months[dateTime.month - 1]} ${dateTime.day}, ${dateTime.year} ${dateTime.hour}:${dateTime.minute} ${dateTime.hour > 12 ? "PM" : "AM"}";
   }
 
   Future<void> generateMessage() async {
     if (_inputController.text.isEmpty) {
       return;
     }
+
+    setState(() {
+      _isLoading = true;
+    });
 
     Message message = Message();
     message.sender = 'user';
@@ -55,8 +61,6 @@ class _ChatScreenState extends State<ChatScreen> {
     var content = Content.text(_inputController.text);
     var response = await chat.sendMessage(content);
 
-    print(response.text!);
-
     Message responseMessage = Message();
     responseMessage.sender = 'genie';
     responseMessage.time = getDate(DateTime.now());
@@ -65,14 +69,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
     setState(() {
       chatMessages = Database().loadMessages();
+      _isLoading = false;
     });
-    // final chat = model.startChat(history: [
-    //   Content.text('Hello, I have 2 dogs in my house.'),
-    //   Content.model([TextPart('Great to meet you. What would you like to know?')]),
-    // ]);
-    // var content = Content.text('can you explain what conversation we are having?');
-    // var response = await chat.sendMessage(content);
-    // print(response.text);
+    _inputController.clear();
   }
 
   @override
@@ -165,86 +164,28 @@ class _ChatScreenState extends State<ChatScreen> {
                                 ),
                               ],
                             ),
-
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.end,
-                    //   children: [
-                    //     Expanded(
-                    //       child: Container(
-                    //         margin: EdgeInsets.all(10),
-                    //         child: Column(
-                    //           crossAxisAlignment: CrossAxisAlignment.end,
-                    //           children: [
-                    //             Text(
-                    //               "Jul 12, 2021 10:00 AM",
-                    //               style: TextStyle(
-                    //                 color: Color.fromARGB(255, 100, 100, 100),
-                    //                 fontWeight: FontWeight.bold,
-                    //                 fontSize: 12,
-                    //               ),
-                    //             ),
-                    //             Container(
-                    //               padding: EdgeInsets.all(10),
-                    //               margin: EdgeInsets.only(top: 5),
-                    //               decoration: BoxDecoration(
-                    //                 color: Theme.of(context).primaryColor,
-                    //                 borderRadius: BorderRadius.circular(10),
-                    //               ),
-                    //               child: Text(
-                    //                 'I need help with my account. I am unable to login. I have tried resetting my password but it is not working.',
-                    //                 style: TextStyle(
-                    //                   color: Colors.white,
-                    //                 ),
-                    //               ),
-                    //             ),
-                    //           ],
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.start,
-                    //   children: [
-                    //     Expanded(
-                    //       child: Container(
-                    //         margin: EdgeInsets.all(10),
-                    //         child: Column(
-                    //           crossAxisAlignment: CrossAxisAlignment.start,
-                    //           children: [
-                    //             Text(
-                    //               "Jul 12, 2021 10:00 AM",
-                    //               style: TextStyle(
-                    //                 color: Color.fromARGB(255, 100, 100, 100),
-                    //                 fontWeight: FontWeight.bold,
-                    //                 fontSize: 12,
-                    //               ),
-                    //             ),
-                    //             Container(
-                    //               padding: EdgeInsets.all(10),
-                    //               margin: EdgeInsets.only(top: 5),
-                    //               decoration: BoxDecoration(
-                    //                 color: Color.fromARGB(255, 49, 49, 49),
-                    //                 borderRadius: BorderRadius.circular(10),
-                    //               ),
-                    //               child: Text(
-                    //                 'Please provide me with your email address.',
-                    //                 style: TextStyle(
-                    //                   color: Colors.white,
-                    //                 ),
-                    //               ),
-                    //             ),
-                    //           ],
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
                   ],
                 ),
               ),
             ),
           ),
+
+          _isLoading
+              ? const Positioned(
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  left: 0,
+                  child: SizedBox(
+                    width: 10,
+                    height: 10,
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      strokeWidth: 2,
+                    ),
+                  ),
+                )
+              : const SizedBox.shrink(),
 
           // bottom buttons
           Padding(
@@ -254,6 +195,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 Expanded(
                   flex: 1,
                   child: TextField(
+                    enabled: !_isLoading,
                     controller: _inputController,
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
@@ -265,7 +207,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     decoration: const InputDecoration(
                       filled: true,
                       fillColor: Color.fromARGB(255, 17, 20, 27),
-                      hintText: 'Ask a anything...',
+                      hintText: 'Ask me anything...',
                       prefixStyle: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -289,14 +231,14 @@ class _ChatScreenState extends State<ChatScreen> {
                         borderSide: BorderSide(color: Color.fromARGB(255, 68, 68, 68), width: 1),
                         borderRadius: BorderRadius.all(Radius.circular(8)),
                       ),
-                      contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                      contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 10),
                     ),
                   ),
                 ),
                 const SizedBox(width: 5),
                 IconButton(
                   onPressed: () {
-                    generateMessage();
+                    _isLoading ? null : generateMessage();
                   },
                   icon: const Icon(
                     Icons.send_rounded,
