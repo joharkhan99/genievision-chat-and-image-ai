@@ -302,7 +302,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Color.fromARGB(255, 68, 68, 68), width: 1),
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
                         ),
                         contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 10),
                         suffixIcon: IconButton(
@@ -317,7 +317,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
                             backgroundColor: Theme.of(context).primaryColor,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                         ),
