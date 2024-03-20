@@ -16,7 +16,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final _pages = [
     const ImageScreen(),
-    const ChatScreen(),
+    ChatScreen(),
   ];
 
   int _selectedIndex = 0;
@@ -32,7 +32,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       routes: {
         '/image-screen': (context) => const ImageScreen(),
-        '/chat-screen': (context) => const ChatScreen(),
+        '/chat-screen': (context) => ChatScreen(),
       },
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
