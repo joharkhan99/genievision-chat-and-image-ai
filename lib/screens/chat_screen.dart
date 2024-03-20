@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:genievision/database.dart';
 import 'package:genievision/message_model.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
@@ -13,6 +14,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final _inputController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   List<Message> chatMessages = [];
   String apiKey = "AIzaSyBqbJzQPpcZTkJJARtW02EiSWW8GFJpDe0";
@@ -20,8 +22,22 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _isLoading = false;
 
   @override
+  void dispose() {
+    super.dispose();
+    _inputController.dispose();
+    _scrollController.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
+    // scroll to bottom
+    // _scrollController.animateTo(
+    //   _scrollController.position.maxScrollExtent,
+    //   duration: Duration(milliseconds: 300), // Adjust duration as needed
+    //   curve: Curves.easeOut,
+    // );
+
     chatMessages = Database().loadMessages();
     model = GenerativeModel(model: 'gemini-pro', apiKey: apiKey, generationConfig: GenerationConfig(maxOutputTokens: 500));
   }
@@ -72,18 +88,37 @@ class _ChatScreenState extends State<ChatScreen> {
       _isLoading = false;
     });
     _inputController.clear();
+    // scroll to bottom
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
+
+  void copyToClipboard(String text) async {
+    // copy text to clipboard
+    await Clipboard.setData(ClipboardData(text: text));
+
+    const snackBar = SnackBar(
+      content: Text("Text copied to Clipboard"),
+      duration: Duration(seconds: 2),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(0),
       child: Column(
         children: [
           Expanded(
             flex: 1,
             child: SelectionArea(
               child: SingleChildScrollView(
+                controller: _scrollController,
+                padding: const EdgeInsets.only(bottom: 40),
                 child: Column(
                   children: <Widget>[
                     // chat messages
@@ -99,17 +134,34 @@ class _ChatScreenState extends State<ChatScreen> {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.end,
                                       children: [
-                                        Text(
-                                          chatMessages[i].time,
-                                          style: const TextStyle(
-                                            color: Color.fromARGB(255, 100, 100, 100),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12,
-                                          ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          children: [
+                                            // icon button for copy
+                                            IconButton(
+                                              color: Colors.red,
+                                              padding: const EdgeInsets.all(0),
+                                              alignment: Alignment.centerRight,
+                                              onPressed: () => copyToClipboard(chatMessages[i].text),
+                                              icon: const Icon(
+                                                Icons.copy_rounded,
+                                                color: Color.fromARGB(255, 100, 100, 100),
+                                                size: 20,
+                                              ),
+                                            ),
+                                            Text(
+                                              chatMessages[i].time,
+                                              style: const TextStyle(
+                                                color: Color.fromARGB(255, 100, 100, 100),
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                         Container(
                                           padding: const EdgeInsets.all(10),
-                                          margin: const EdgeInsets.only(top: 5),
+                                          margin: const EdgeInsets.only(top: 5, bottom: 0),
                                           decoration: BoxDecoration(
                                             color: Theme.of(context).primaryColor,
                                             borderRadius: BorderRadius.circular(10),
@@ -136,13 +188,30 @@ class _ChatScreenState extends State<ChatScreen> {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          chatMessages[i].time,
-                                          style: const TextStyle(
-                                            color: Color.fromARGB(255, 100, 100, 100),
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12,
-                                          ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              chatMessages[i].time,
+                                              style: const TextStyle(
+                                                color: Color.fromARGB(255, 100, 100, 100),
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                            IconButton(
+                                              color: Colors.red,
+                                              constraints: const BoxConstraints.tightForFinite(),
+                                              padding: const EdgeInsets.all(0),
+                                              alignment: Alignment.centerRight,
+                                              onPressed: () => copyToClipboard(chatMessages[i].text),
+                                              icon: const Icon(
+                                                Icons.copy_rounded,
+                                                color: Color.fromARGB(255, 100, 100, 100),
+                                                size: 20,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                         Container(
                                           padding: const EdgeInsets.all(10),
@@ -194,64 +263,68 @@ class _ChatScreenState extends State<ChatScreen> {
               children: [
                 Expanded(
                   flex: 1,
-                  child: TextField(
-                    enabled: !_isLoading,
-                    controller: _inputController,
-                    maxLines: null,
-                    keyboardType: TextInputType.multiline,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * 0.3,
                     ),
-                    decoration: const InputDecoration(
-                      filled: true,
-                      fillColor: Color.fromARGB(255, 17, 20, 27),
-                      hintText: 'Ask me anything...',
-                      prefixStyle: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey,
-                      ),
-                      hintStyle: TextStyle(
+                    child: TextField(
+                      enabled: !_isLoading,
+                      controller: _inputController,
+                      maxLines: null,
+                      keyboardType: TextInputType.multiline,
+                      style: const TextStyle(
+                        color: Colors.white,
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: Colors.grey,
                       ),
-                      labelStyle: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Color.fromARGB(255, 17, 20, 27),
+                        hintText: 'Ask me anything...',
+                        prefixStyle: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey,
+                        ),
+                        hintStyle: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.grey,
+                        ),
+                        labelStyle: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Color.fromARGB(255, 54, 54, 54), width: 1),
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Color.fromARGB(255, 68, 68, 68), width: 1),
+                          borderRadius: BorderRadius.all(Radius.circular(8)),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            _isLoading ? null : generateMessage();
+                          },
+                          icon: const Icon(
+                            Icons.send_rounded,
+                            color: Colors.white,
+                          ),
+                          style: IconButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                            backgroundColor: Theme.of(context).primaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                          ),
+                        ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Color.fromARGB(255, 54, 54, 54), width: 1),
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Color.fromARGB(255, 68, 68, 68), width: 1),
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                      ),
-                      contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 10),
                     ),
                   ),
                 ),
-                const SizedBox(width: 5),
-                IconButton(
-                  onPressed: () {
-                    _isLoading ? null : generateMessage();
-                  },
-                  icon: const Icon(
-                    Icons.send_rounded,
-                    color: Colors.white,
-                  ),
-                  style: IconButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                    backgroundColor: Theme.of(context).primaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                )
               ],
             ),
           ),
