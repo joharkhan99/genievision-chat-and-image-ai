@@ -251,6 +251,8 @@ class _ChatScreenState extends State<ChatScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 5),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Expanded(
                   flex: 1,
@@ -296,26 +298,43 @@ class _ChatScreenState extends State<ChatScreen> {
                           borderRadius: BorderRadius.all(Radius.circular(10)),
                         ),
                         contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 10),
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            _isLoading ? null : generateMessage();
-                          },
-                          icon: const Icon(
-                            Icons.send_rounded,
-                            color: Colors.white,
-                          ),
-                          style: IconButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                            backgroundColor: Theme.of(context).primaryColor,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                        ),
+                        // suffixIcon: IconButton(
+                        //   onPressed: () {
+                        //     _isLoading ? null : generateMessage();
+                        //   },
+                        //   icon: const Icon(
+                        //     Icons.send_rounded,
+                        //     color: Colors.white,
+                        //   ),
+                        //   style: IconButton.styleFrom(
+                        //     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                        //     backgroundColor: Theme.of(context).primaryColor,
+                        //     shape: RoundedRectangleBorder(
+                        //       borderRadius: BorderRadius.circular(10),
+                        //     ),
+                        //   ),
+                        // ),
                       ),
                     ),
                   ),
                 ),
+                const SizedBox(width: 5),
+                IconButton(
+                  onPressed: () {
+                    _isLoading ? null : generateMessage();
+                  },
+                  icon: const Icon(
+                    Icons.send_rounded,
+                    color: Colors.white,
+                  ),
+                  style: IconButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                    backgroundColor: Theme.of(context).primaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                )
               ],
             ),
           ),

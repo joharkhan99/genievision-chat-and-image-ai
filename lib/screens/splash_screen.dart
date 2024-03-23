@@ -17,8 +17,8 @@ class SplashScreen extends StatelessWidget {
       ),
     );
 
-    return const DecoratedBox(
-      decoration: BoxDecoration(
+    return DecoratedBox(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -33,6 +33,11 @@ class SplashScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            Image.asset(
+              'lib/assets/splash.png',
+              width: 150,
+              height: 150,
+            ),
             Text(
               "GenieVision",
               style: TextStyle(
