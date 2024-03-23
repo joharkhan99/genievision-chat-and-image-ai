@@ -1,6 +1,5 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:genievision/screens/chat_screen.dart';
-import 'package:genievision/screens/image_screen.dart';
 import 'package:genievision/screens/splash_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -21,9 +20,35 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+    return const WebContainer(
+      app: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: SplashScreen(),
+      ),
     );
+  }
+}
+
+class WebContainer extends StatelessWidget {
+  final MaterialApp app;
+  const WebContainer({super.key, required this.app});
+
+  @override
+  Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    return kIsWeb
+        ? Container(
+            color: Colors.black,
+            child: FractionallySizedBox(
+              widthFactor: screenWidth < 1000 ? 1.0 : 500 / screenWidth,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                color: const Color.fromARGB(255, 17, 20, 27),
+                child: app,
+              ),
+            ),
+          )
+        : app;
   }
 }

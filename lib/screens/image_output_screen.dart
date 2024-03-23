@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -65,7 +66,7 @@ class ImageOutputScreen extends StatelessWidget {
               children: [
                 SizedBox(
                   // 50% of screen width
-                  width: MediaQuery.of(context).size.width * 0.47,
+                  width: MediaQuery.of(context).size.width * (kIsWeb ? 0.1 : 0.49),
                   child: ElevatedButton(
                     onPressed: () => goBack(context),
                     style: ElevatedButton.styleFrom(
@@ -86,7 +87,7 @@ class ImageOutputScreen extends StatelessWidget {
                   width: MediaQuery.of(context).size.width * 0.01,
                 ),
                 SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.47,
+                  width: MediaQuery.of(context).size.width * (kIsWeb ? 0.1 : 0.49),
                   child: ElevatedButton(
                     onPressed: () => copyText(context),
                     style: ElevatedButton.styleFrom(

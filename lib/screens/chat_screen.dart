@@ -76,6 +76,8 @@ class _ChatScreenState extends State<ChatScreen> {
     );
     var content = Content.text(_inputController.text);
     var response = await chat.sendMessage(content);
+    print(response);
+    print(response.text);
 
     Message responseMessage = Message();
     responseMessage.sender = 'genie';
@@ -111,6 +113,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(0),
+      color: Color.fromARGB(255, 17, 20, 27),
       child: Column(
         children: [
           Expanded(
