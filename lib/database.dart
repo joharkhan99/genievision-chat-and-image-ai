@@ -36,8 +36,8 @@ class Database {
     }
     if (history.isEmpty) {
       history = [
-        Content.text('Hello, I have 2 dogs in my house.'),
-        Content.model([TextPart('Great to meet you. What would you like to know?')])
+        Content.text('Hi, you are an AI and I would like to ask you questions.'),
+        Content.model([TextPart('Of course! Feel free to ask me anything you\'d like.')])
       ];
     }
     return history;

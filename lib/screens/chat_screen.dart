@@ -113,148 +113,136 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(0),
-      color: Color.fromARGB(255, 17, 20, 27),
+      color: const Color.fromARGB(255, 17, 20, 27),
       child: Column(
         children: [
           Expanded(
             flex: 1,
-            child: SelectionArea(
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                padding: const EdgeInsets.only(bottom: 40),
-                child: Column(
-                  children: <Widget>[
-                    // chat messages
-
-                    for (var i = 0; i < chatMessages.length; i++)
-                      chatMessages[i].sender == 'user'
-                          ? Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    margin: const EdgeInsets.all(10),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.end,
-                                          children: [
-                                            // icon button for copy
-                                            IconButton(
-                                              color: Colors.red,
-                                              padding: const EdgeInsets.all(0),
-                                              alignment: Alignment.centerRight,
-                                              onPressed: () => copyToClipboard(chatMessages[i].text),
-                                              icon: const Icon(
-                                                Icons.copy_rounded,
-                                                color: Color.fromARGB(255, 100, 100, 100),
-                                                size: 20,
-                                              ),
-                                            ),
-                                            Text(
-                                              chatMessages[i].time,
-                                              style: const TextStyle(
-                                                color: Color.fromARGB(255, 100, 100, 100),
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                          ],
+            child: ListView.builder(
+              controller: _scrollController,
+              itemCount: chatMessages.length,
+              // shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return chatMessages[index].sender == 'user'
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              margin: const EdgeInsets.all(10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      // icon button for copy
+                                      IconButton(
+                                        color: Colors.red,
+                                        padding: const EdgeInsets.all(0),
+                                        alignment: Alignment.centerRight,
+                                        onPressed: () => copyToClipboard(chatMessages[index].text),
+                                        icon: const Icon(
+                                          Icons.copy_rounded,
+                                          color: Color.fromARGB(255, 100, 100, 100),
+                                          size: 20,
                                         ),
-                                        Container(
-                                          padding: const EdgeInsets.all(10),
-                                          margin: const EdgeInsets.only(top: 5, bottom: 0),
-                                          decoration: BoxDecoration(
-                                            color: Theme.of(context).primaryColor,
-                                            borderRadius: BorderRadius.circular(10),
-                                          ),
-                                          child: Text(
-                                            chatMessages[i].text,
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          ),
+                                      ),
+                                      Text(
+                                        chatMessages[index].time,
+                                        style: const TextStyle(
+                                          color: Color.fromARGB(255, 100, 100, 100),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
                                         ),
-                                      ],
+                                      ),
+                                    ],
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    margin: const EdgeInsets.only(top: 5, bottom: 0),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).primaryColor,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Text(
+                                      chatMessages[index].text,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    margin: const EdgeInsets.all(10),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              chatMessages[i].time,
-                                              style: const TextStyle(
-                                                color: Color.fromARGB(255, 100, 100, 100),
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                            IconButton(
-                                              color: Colors.red,
-                                              constraints: const BoxConstraints.tightForFinite(),
-                                              padding: const EdgeInsets.all(0),
-                                              alignment: Alignment.centerRight,
-                                              onPressed: () => copyToClipboard(chatMessages[i].text),
-                                              icon: const Icon(
-                                                Icons.copy_rounded,
-                                                color: Color.fromARGB(255, 100, 100, 100),
-                                                size: 20,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.all(10),
-                                          margin: const EdgeInsets.only(top: 5),
-                                          decoration: BoxDecoration(
-                                            color: const Color.fromARGB(255, 49, 49, 49),
-                                            borderRadius: BorderRadius.circular(10),
-                                          ),
-                                          child: Text(
-                                            chatMessages[i].text,
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                  ],
-                ),
-              ),
+                          ),
+                        ],
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              margin: const EdgeInsets.all(10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        chatMessages[index].time,
+                                        style: const TextStyle(
+                                          color: Color.fromARGB(255, 100, 100, 100),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        color: Colors.red,
+                                        constraints: const BoxConstraints.tightForFinite(),
+                                        padding: const EdgeInsets.all(0),
+                                        alignment: Alignment.centerRight,
+                                        onPressed: () => copyToClipboard(chatMessages[index].text),
+                                        icon: const Icon(
+                                          Icons.copy_rounded,
+                                          color: Color.fromARGB(255, 100, 100, 100),
+                                          size: 20,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    margin: const EdgeInsets.only(top: 5),
+                                    decoration: BoxDecoration(
+                                      color: const Color.fromARGB(255, 49, 49, 49),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Text(
+                                      chatMessages[index].text,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+              },
             ),
           ),
 
           _isLoading
-              ? const Positioned(
-                  top: 0,
-                  right: 0,
-                  bottom: 0,
-                  left: 0,
-                  child: SizedBox(
-                    width: 10,
-                    height: 10,
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      strokeWidth: 2,
-                    ),
+              ? const SizedBox(
+                  width: 10,
+                  height: 10,
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    strokeWidth: 2,
                   ),
                 )
               : const SizedBox.shrink(),
